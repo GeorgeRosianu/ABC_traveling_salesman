@@ -13,9 +13,9 @@ from scipy.spatial import distance
 class Bee:
     def __init__(self, node_set):
         self.role = ''
-        self.path = list(node_set) # stores all nodes in each bee, will randomize foragers
+        self.path = list(node_set)  # stores all nodes in each bee, will randomize foragers
         self.distance = 0
-        self.cycle = 0 # number of iterations on current solution
+        self.cycle = 0  # number of iterations on current solution
 
 
 def read_data_from_csv(file_name):
@@ -94,6 +94,7 @@ def assign_roles(hive, role_percentiles, table):
 
     return hive
 
+
 def mutate_path(path):
     """
     Gets a random index 0 to next to last element.
@@ -105,6 +106,7 @@ def mutate_path(path):
     new_path = list(path)
     new_path[random_idx], new_path[random_idx + 1] = new_path[random_idx + 1], new_path[random_idx]
     return new_path
+
 
 def forage(bee, table, limit):
     """
@@ -159,8 +161,8 @@ def waggle(hive, best_distance, table, forager_limit, scout_count):
             scout(hive[i], table)
 
     # after processing all bees, set worst performers to scout
-    results.sort(reverse = True, key=lambda tup: tup[1])
-    scouts = [ tup[0] for tup in results[0:int(scout_count)] ]
+    results.sort(reverse=True, key=lambda tup: tup[1])
+    scouts = [tup[0] for tup in results[0:int(scout_count)]]
     for new_scout in scouts:
         hive[new_scout].role = 'S'
     return best_distance, best_path
@@ -191,76 +193,51 @@ def print_details(cycle, path, distance, bee):
     print("BEE: {}".format(bee))
     print("\n")
 
-"""
-def make_csv(data, file_name):
-    
-    # Writes data to csv file.
-    
-    with open(file_name, 'a') as f:
-        writer = csv.writer(f)
-        writer.writerow(data)
-    f.close()
-"""
 
 def main():
     # Control parameters
-    population = 30
+    population = 180
     forager_percent = 0.5
     onlooker_percent = 0.5
     role_percent = [onlooker_percent, forager_percent]
     scout_percent = 0.2
     scout_count = math.ceil(population * scout_percent)
-    forager_limit = 100
-    cycle_limit = 500
+    forager_limit = 500
+    cycle_limit = 2500
     cycle = 1
 
     # Data source
-    # data = read_data_from_csv("data/data_10.csv")
-    # data = read_data_from_csv("data/data_11.csv")
     data = read_data_from_csv("data/data_12.csv")
 
     # Global vars
     best_distance = sys.maxsize
     best_path = []
     result = ()
-    # result_file = "results/{}_nodes/results_{}_nodes_{}_bees_{}_scouts_{}_cycles_{}_R_{}_F.csv".format(len(data), len(data), population, scout_count, cycle_limit, onlooker_percent, forager_percent)
-    # result_file = "results/{}_nodes/results_{}_nodes_{}_bees_{}_scouts_{}_cycles.csv".format(len(data), len(data), population, scout_count, cycle_limit, onlooker_percent, forager_percent)
-    result_file = "results/{}_nodes/results_{}_nodes_{}_bees_{}_scouts_{}_cycles_{}_forager_limit.csv".format(len(data), len(data), population, scout_count, cycle_limit, forager_limit)
 
     # Initialization
     table = make_distance_table(data)
     hive = initialize_hive(population, data)
     assign_roles(hive, role_percent, table)
 
-
     while cycle < cycle_limit:
         waggle_distance, waggle_path = waggle(hive, best_distance, table, forager_limit, scout_count)
         if waggle_distance < best_distance:
             best_distance = waggle_distance
             best_path = list(waggle_path)
-            print_details(cycle, best_path, best_distance,'F')
-            result = (cycle, best_path, best_distance,'F')
+            print_details(cycle, best_path, best_distance, 'F')
+            result = (cycle, best_path, best_distance, 'F')
 
         recruit_distance, recruit_path = recruit(hive, best_distance, best_path, table)
         if recruit_distance < best_distance:
             best_distance = recruit_distance
             best_path = list(recruit_path)
-            print_details(cycle, best_path, best_distance,'R')
-            result = (cycle, best_path, best_distance,'R')
-
-        if cycle % 1000 == 0:
-            print("CYCLE #: {}\n".format(cycle))
+            print_details(cycle, best_path, best_distance, 'R')
+            result = (cycle, best_path, best_distance, 'R')
 
         cycle += 1
 
-    # print(result)
 
-    # make_csv(result, result_file)
-
-#------------------------------------------------------------------------------------#
+# ------------------------------------------------------------------------------------#
 
 if __name__ == '__main__':
-    # for i in range (0, 100):
-        main()
-
-    # main()
+    main()
