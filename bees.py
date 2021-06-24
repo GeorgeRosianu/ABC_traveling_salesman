@@ -1,8 +1,3 @@
-# bees.py
-# A solution to the Traveling Salesman Problem
-# that mimics the foraging behavior of honey bees
-
-
 import csv
 import math
 import random
@@ -190,7 +185,7 @@ def print_details(cycle, path, distance, bee):
     print("CYCLE: {}".format(cycle))
     print("PATH: {}".format(path))
     print("DISTANCE: {}".format(distance))
-    print("BEE: {}".format(bee))
+    # print("BEE: {}".format(bee))
     print("\n")
 
 
@@ -212,7 +207,6 @@ def main():
     # Global vars
     best_distance = sys.maxsize
     best_path = []
-    result = ()
 
     # Initialization
     table = make_distance_table(data)
@@ -236,8 +230,6 @@ def main():
 
         cycle += 1
 
-
-# ------------------------------------------------------------------------------------#
 
 if __name__ == '__main__':
     main()
